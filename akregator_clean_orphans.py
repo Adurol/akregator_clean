@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-# Search for unnecessary MK4-Files from Akregator in the Archive-Directory.
+# Search unnecessary MK4-Files of Akregator in the Archive-Directory.
 #
-# Open the "feeds.opml" and search for the tag "xmlUrl".
-# Construct valid Metakit-Filenames and compare these
-# with the MK4-Files found in the Archive-Directory.
-# Report wich files are found only in the Archive-Directory and
-# not listed in the feeds.opml.
+# Open the "feeds.opml" and search the tag "xmlUrl" for reference.
+# Construct valid Metakit-Filenames and compare with MK4-Files in
+# the Archive-Directory. Report oprhan files only found in the
+# Archive-Directory and not listed in the "feeds.opml".
 #
-# Version:  2015-05-08
+# Version:  2015-05-13
 #
 #
 #            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
@@ -25,14 +25,15 @@
 #
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
+
 from datetime import datetime
 import argparse
 import os
 
-file_opml = os.path.join(os.environ['HOME'],
-                         '.kde4/share/apps/akregator/data/feeds.opml')
-dir_archive = os.path.join(os.environ['HOME'],
-                           '.kde4/share/apps/akregator/Archive/')
+
+file_opml = os.path.join(os.environ['HOME'], '.kde4/share/apps/akregator/data/feeds.opml')
+dir_archive = os.path.join(os.environ['HOME'], '.kde4/share/apps/akregator/Archive/')
+
 
 mk4_dir = os.listdir(dir_archive)
 mk4_dir.remove('feedlistbackup.mk4')
@@ -56,48 +57,45 @@ with open(file_opml, mode='rt') as opml:
         line = opml.readline()
     opml.close()
 
-# create new list with filenames found in mk4_dir but not in the mk4_opml
-orphan_mk4 = [f for f in mk4_dir if f not in mk4_opml]
-broken_opml = [e for e in mk4_opml if e not in mk4_dir]
 
-parser = argparse.ArgumentParser(description=
-                                 'List all MK4-Files from "' + dir_archive + '"\
+# create new list with filenames found in mk4_dir but not in the mk4_opml
+orphans = [f for f in mk4_dir if f not in mk4_opml]
+broken = [e for e in mk4_opml if e not in mk4_dir]
+
+
+parser = argparse.ArgumentParser(description='List all MK4-Files from "' + dir_archive + '"\
                                  without being found in the OPML. These are \
                                  most likely orphans from deleted subscription.')
-parser.add_argument('-l',
-                    '--long',
+parser.add_argument('-l', '--long',
                     help='List orphan MK4-Files with full path',
                     action='store_true')
-parser.add_argument('-d',
-                    '--delete',
+parser.add_argument('-d', '--delete',
                     help='Delete orphan MK4-Files',
                     action='store_true')
-parser.add_argument('-b',
-                    '--broken',
+parser.add_argument('-b', '--broken',
                     help='List entries found in the OPML with no corresponding MK4-File',
                     action='store_true')
 args = parser.parse_args()
 if args.long:
-    for f in orphan_mk4:
-        path = os.path.join(dir_archive, f)
+    for orphan in orphans:
+        path = os.path.join(dir_archive, orphan)
         print(path)
 elif args.delete:
-    for f in orphan_mk4:
-        delete = os.path.join(dir_archive, f)
-        print('Removed ' + delete)
-        trashfiles = os.path.join(os.environ['HOME'],
-                                  '.local/share/Trash/files/', f)
-        os.rename(delete, trashfiles)
-        trashinfo = os.path.join(os.environ['HOME'],
-                                 '.local/share/Trash/info/', f + '.trashinfo')
-        with open(trashinfo, mode='w') as info:
+    for orphan in orphans:
+        del_file = os.path.join(dir_archive, orphan)
+        trash_dir = os.path.join(os.environ['HOME'], '.local/share/Trash/')
+        trash_file = os.path.join(trash_dir, 'files/', orphan)
+        trash_info = os.path.join(trash_dir, 'info/', orphan + '.trashinfo')
+        os.rename(del_file, trash_file)
+        with open(trash_info, mode='w') as info:
             info.write('[Trash Info]\n')
-            info.write('Path=' + delete + '\n')
+            info.write('Path=' + del_file + '\n')
             info.write('DeletionDate=' + datetime.now().isoformat()[0:19] + '\n')
             info.close()
+        print('Removed ' + del_file)
 elif args.broken:
-    for e in broken_opml:
+    for e in broken:
         print(e)
 else:
-    for f in orphan_mk4:
-        print(f)
+    for orphan in orphans:
+        print(orphan)
