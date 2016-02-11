@@ -9,8 +9,20 @@ When a feed subscription in Akregator is deleted, the corresponding Metakit-File
 * Python >= 3.2
 
 ### Usage
-```bash
-python3 akregator_clean_orphans.py -h
+```
+$ python3 akregator_clean_orphans.py -h
+
+usage: akregator_clean_orphans.py [-h] [-l] [-b] [-d]
+
+List all MK4-Files within "/home/username/.local/share/akregator/Archive/"
+without being found in the "/home/username/.local/share/akregator/data/feeds.opml".
+These are most likely orphans from deleted subscriptions.
+
+optional arguments:
+  -h, --help    show this help message and exit
+  -l, --long    list orphan MK4-Files with full path
+  -b, --broken  list entries found in the OPML with no corresponding MK4-File
+  -d, --delete  delete orphan MK4-Files to Trash
 ```
 
 ### License
