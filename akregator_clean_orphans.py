@@ -7,7 +7,7 @@
 # Metakit-Filenames (MK4). Search for matching MK4-Files in the Archive-Directory.
 # Report oprhan files found only in the Archive-Directory and not listed in the "feeds.opml".
 #
-# Version:  2016-02-11
+# Version:  2016-02-17
 
 # The MIT License (MIT)
 #
@@ -52,6 +52,7 @@ with open(feeds_opml, mode='rt') as opml:
             if element.startswith('xmlUrl'):
                 # convert entries found in the feed.opml to mk4-filenames
                 element = element.lstrip('xmlUrl=')
+                element = element.rstrip('/>')
                 element = element.strip('"')
                 element = element.replace('/', '_')
                 element = element.replace(':', '_')
