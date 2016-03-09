@@ -7,7 +7,7 @@
 # Metakit-Filenames (MK4). Search for matching MK4-Files in the Archive-Directory.
 # Report oprhan files found only in the Archive-Directory and not listed in the "feeds.opml".
 #
-# Version:  2016-02-17
+# Version:  2016-09-03
 
 # The MIT License (MIT)
 #
@@ -29,7 +29,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-import argparse
 import os
 
 from datetime import datetime
@@ -68,6 +67,7 @@ with open(feeds_opml, mode='rt') as opml:
 orphans = [filename for filename in mk4 if filename not in outline]
 broken = [element for element in outline if element not in mk4]
 
+
 def trash(filepath):
     """Move file to Trash if requested and create corresponding metadata.
 
@@ -83,7 +83,7 @@ def trash(filepath):
 
         # getting $XDG_DATA_HOME is cumbersome, so hardcoding the path to trash
         trash_files = os.path.join(os.environ['HOME'],
-                                  '.local/share/Trash/files/', org_filename)
+                                   '.local/share/Trash/files/', org_filename)
         trash_info = os.path.join(os.environ['HOME'],
                                   '.local/share/Trash/info/', org_filename + '.trashinfo')
 
@@ -99,9 +99,14 @@ def trash(filepath):
         raise FileNotFoundError(filepath)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='List all MK4-Files within "' + archive_path + '"\
-                                     without being found in the "' + feeds_opml + '". These are most \
-                                     likely orphans from deleted subscriptions.')
+    # hack to bypass the default columns size of 80 for argparse
+    os.environ['COLUMNS'] = os.popen('stty size', 'r').read().split()[1]
+
+    import argparse
+
+    parser = argparse.ArgumentParser(description='List all MK4-Files within "' + archive_path +
+                                     '" without being found in the "' + feeds_opml +
+                                     '". These are most likely orphans from deleted subscriptions.')
 
     parser.add_argument('-l', '--long',
                         help='list orphan MK4-Files with full path',
