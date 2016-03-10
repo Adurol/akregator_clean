@@ -7,7 +7,7 @@
 # Metakit-Filenames (MK4). Search for matching MK4-Files in the Archive-Directory.
 # Report oprhan files found only in the Archive-Directory and not listed in the "feeds.opml".
 #
-# Version:  2016-09-03
+# Version:  2016-03-10
 
 # The MIT License (MIT)
 #
@@ -31,6 +31,11 @@
 
 import os
 
+try:
+    import xml.etree.cElementTree as ElementTree
+except ImportError:
+    import xml.etree.ElementTree as ElementTree
+
 from datetime import datetime
 
 
@@ -41,26 +46,24 @@ mk4 = os.listdir(archive_path)
 mk4.remove('feedlistbackup.mk4')
 mk4.remove('archiveindex.mk4')
 
+
 outline = []
+
 with open(feeds_opml, mode='rt') as opml:
-    line = opml.readline()
-    while line is not '':
-        elements = line.split()
-        for element in elements:
-
-            if element.startswith('xmlUrl'):
-                # convert entries found in the feed.opml to mk4-filenames
-                element = element.lstrip('xmlUrl=')
-                element = element.rstrip('/>')
-                element = element.strip('"')
-                element = element.replace('/', '_')
-                element = element.replace(':', '_')
-                element = element.replace('&amp;', '&')
-                element = element + '.mk4'
-                outline.append(element)
-
-        line = opml.readline()
+    tree = ElementTree.parse(opml)
     opml.close()
+
+for node in tree.iter('outline'):
+    xmlUrl = node.attrib.get('xmlUrl')
+
+    # folders have no xmlUrl
+    if xmlUrl is not None:
+        # convert entries found in the feed.opml to mk4-filenames used by Akregator
+        xmlUrl = xmlUrl.replace('/', '_')
+        xmlUrl = xmlUrl.replace(':', '_')
+        xmlUrl = xmlUrl.replace('&amp;', '&')
+        xmlUrl = xmlUrl + '.mk4'
+        outline.append(xmlUrl)
 
 
 # here works the magic
@@ -98,8 +101,9 @@ def trash(filepath):
     except FileNotFoundError:
         raise FileNotFoundError(filepath)
 
+
 if __name__ == "__main__":
-    # hack to bypass the default columns size of 80 for argparse
+    # hack to bypass the default column size of 80 for argparse
     os.environ['COLUMNS'] = os.popen('stty size', 'r').read().split()[1]
 
     import argparse

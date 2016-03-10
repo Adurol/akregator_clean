@@ -9,6 +9,8 @@ When a feed subscription in Akregator is deleted, the corresponding Metakit-File
 * Python >= 3.2
 
 ### Usage
+Please close Akregator beforehand!
+
 ```
 $ python3 akregator_clean_orphans.py -h
 
@@ -30,6 +32,5 @@ optional arguments:
 
 ### Notes
 * Works and (eyeball)tested on KDE Plasma 5 with a few hundred MK4-Files.
-* To lazy to parse the ```feeds.opml```. Just did a ```readline```. Dirty, but works. Maybe if I need a parsing exercise it will be revised.
 * This script was born out of the need from an old (apparently fixed) bug that would crash Akregator with an overfull Archive-Directory.
 * Just change the path accordingly and it should work with KDE4.
