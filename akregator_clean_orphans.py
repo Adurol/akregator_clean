@@ -5,7 +5,7 @@
 #
 # Open the "feeds.opml" and search "xmlUrl"-tags as reference to construct valid
 # Metakit-Filenames (MK4). Search for matching MK4-Files in the Archive-Directory.
-# Report oprhan files found only in the Archive-Directory and not listed in the "feeds.opml".
+# Report orphan files found only in the Archive-Directory and not listed in the "feeds.opml".
 #
 # Version:  2016-03-10
 
@@ -79,6 +79,7 @@ def trash(filepath):
     it will be replaced silently. This is not appropriate as the specification states
     "each subsequent trashing must not overwrite a previous copy"!
     For the usecase here, it should be good enough. You have been warned.
+    BUG: If the Trash-Folder doesn't exist, an exception will be thrown.
     """
     try:
         org_path = os.path.normpath(filepath)
