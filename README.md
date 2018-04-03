@@ -1,5 +1,3 @@
-![works badge](https://img.shields.io/badge/works-for_me-brightgreen.svg)
-![license](http://img.shields.io/badge/license-MIT-blue.svg?link=http://opensource.org/licenses/MIT)
 # akregator_clean
 
 When a feed subscription in Akregator is deleted, the corresponding Metakit-File will remain. `akregator_clean_orphans.py` searches for these orphan MK4-Files with no subscription and reports or deletes them.
